@@ -6,26 +6,44 @@
     <title>Kuba Ton Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
-        .btn-ton { background: #0088cc; border: none; padding: 20px; border-radius: 50%; width: 150px; height: 150px; font-size: 20px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0088cc; }
-        .score { font-size: 32px; margin-top: 20px; }
+        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; user-select: none; }
+        .btn-ton { background: #0088cc; border: none; padding: 20px; border-radius: 50%; width: 150px; height: 150px; font-size: 20px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0088cc; active { transform: scale(0.95); } }
+        .score { font-size: 32px; margin-top: 20px; color: #00ff00; }
+        .user-info { margin-bottom: 20px; font-size: 18px; }
     </style>
 </head>
 <body>
+    <div class="user-info" id="username">Hola, Jugador</div>
     <h1>Kuba Ton Bot 💎</h1>
     <div class="score">Puntos: <span id="puntos">0</span></div>
     <br><br>
     <button class="btn-ton" onclick="sumar()">¡GANAR!</button>
 
     <script>
-        let puntos = 0;
+        let tg = window.Telegram.WebApp;
+        tg.expand(); // Abrir la app a pantalla completa
+
+        // Cargar puntos guardados o empezar en 0
+        let puntos = parseInt(localStorage.getItem('puntos')) || 0;
+        document.getElementById('puntos').innerText = puntos;
+
+        // Poner el nombre del usuario si Telegram lo permite
+        if (tg.initDataUnsafe.user) {
+            document.getElementById('username').innerText = "Hola, " + tg.initDataUnsafe.user.first_name;
+        }
+
         function sumar() {
             puntos++;
             document.getElementById('puntos').innerText = puntos;
-            // Aquí luego conectaremos con el bot para guardar los puntos
+            localStorage.setItem('puntos', puntos); // Guardar en la memoria del móvil
+            
+            // Efecto de vibración suave (si el móvil lo soporta)
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
         }
-        // Avisar a Telegram que la App está lista
-        window.Telegram.WebApp.ready();
+
+        tg.ready();
     </script>
 </body>
 </html>
