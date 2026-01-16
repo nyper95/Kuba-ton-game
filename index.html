@@ -6,44 +6,19 @@
     <title>Kuba Ton Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; user-select: none; }
-        .btn-ton { background: #0088cc; border: none; padding: 20px; border-radius: 50%; width: 150px; height: 150px; font-size: 20px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0088cc; active { transform: scale(0.95); } }
-        .score { font-size: 32px; margin-top: 20px; color: #00ff00; }
-        .user-info { margin-bottom: 20px; font-size: 18px; }
-    </style>
-</head>
-<body>
-    <div class="user-info" id="username">Hola, Jugador</div>
-    <h1>Kuba Ton Bot 💎</h1>
-    <div class="score">Puntos: <span id="puntos">0</span></div>
-    <br><br>
-    <button class="btn-ton" onclick="sumar()">¡GANAR!</button>
+        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 0; user-select: none; }
+        .header { padding: 20px; background: #1a1a1a; border-bottom: 2px solid #0088cc; }
+        .content { padding: 20px; padding-bottom: 100px; }
+        .score { font-size: 40px; color: #00ff00; font-weight: bold; margin: 20px 0; }
+        
+        /* Botón Principal */
+        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 180px; height: 180px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px #0088cc; transition: 0.1s; }
+        .btn-main:active { transform: scale(0.9); }
 
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand(); // Abrir la app a pantalla completa
+        /* Secciones */
+        .section { display: none; }
+        .active { display: block; }
 
-        // Cargar puntos guardados o empezar en 0
-        let puntos = parseInt(localStorage.getItem('puntos')) || 0;
-        document.getElementById('puntos').innerText = puntos;
-
-        // Poner el nombre del usuario si Telegram lo permite
-        if (tg.initDataUnsafe.user) {
-            document.getElementById('username').innerText = "Hola, " + tg.initDataUnsafe.user.first_name;
-        }
-
-        function sumar() {
-            puntos++;
-            document.getElementById('puntos').innerText = puntos;
-            localStorage.setItem('puntos', puntos); // Guardar en la memoria del móvil
+        /* Tareas */
+        .task-card { background: #222; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items:
             
-            // Efecto de vibración suave (si el móvil lo soporta)
-            if (tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
-        }
-
-        tg.ready();
-    </script>
-</body>
-</html>
