@@ -2,107 +2,96 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kuba Ton Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 0; user-select: none; }
-        .header { padding: 20px; background: #1a1a1a; border-bottom: 2px solid #0088cc; }
-        .content { padding: 20px; padding-bottom: 100px; }
-        .score { font-size: 40px; color: #00ff00; font-weight: bold; margin: 20px 0; }
+        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 0; text-align: center; overflow: hidden; }
+        .header { padding: 15px; background: #111; border-bottom: 1px solid #0088cc; font-size: 18px; }
+        .content { height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         
-        /* Botón Principal */
-        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 180px; height: 180px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px #0088cc; transition: 0.1s; }
-        .btn-main:active { transform: scale(0.9); }
-
         /* Secciones */
-        .section { display: none; }
+        .section { display: none; width: 100%; }
         .active { display: block; }
 
-        /* Tareas */
-        .task-card { background: #222; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .btn-go { background: #0088cc; border: none; padding: 8px 15px; border-radius: 8px; color: white; font-weight: bold; }
+        /* Botón y Puntos */
+        .score { font-size: 45px; color: #00ff00; font-weight: bold; margin-bottom: 20px; }
+        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 170px; height: 170px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 0 20px #0088cc; cursor: pointer; }
+        .btn-main:active { transform: scale(0.9); }
 
-        /* Menú Inferior */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { color: #888; text-decoration: none; font-size: 14px; cursor: pointer; }
+        /* Navegación */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
+        .nav-item { color: #666; font-size: 14px; cursor: pointer; }
         .nav-item.selected { color: #0088cc; font-weight: bold; }
+        
+        /* Tareas */
+        .card { background: #1a1a1a; margin: 10px; padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
+        .btn-blue { background: #0088cc; border: none; color: white; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div id="username">Cargando...</div>
-</div>
+<div class="header" id="user-display">Cargando...</div>
 
 <div class="content">
-    <div id="sec-juego" class="section active">
-        <div class="score"><span id="puntos">0</span> 💎</div>
-        <p>¡Toca el diamante para ganar!</p>
-        <button class="btn-main" onclick="sumar()">¡GANAR!</button>
+    <div id="juego" class="section active">
+        <div class="score"><span id="p-game">0</span> 💎</div>
+        <button class="btn-main" onclick="tap()">¡GANAR!</button>
     </div>
 
-    <div id="sec-misiones" class="section">
-        <h2>Misiones Disponibles</h2>
-        <div class="task-card">
-            <span>Unirse al Canal 📢</span>
-            <button class="btn-go" onclick="window.open('https://t.me/TuCanal')">+500</button>
-        </div>
-        <div class="task-card">
-            <span>Invitar 3 amigos 👥</span>
-            <button class="btn-go">+1500</button>
+    <div id="misiones" class="section">
+        <h2>Misiones</h2>
+        <div class="card">
+            <span>Canal Oficial 📢</span>
+            <button class="btn-blue" onclick="window.open('https://t.me/TuCanal')">+500</button>
         </div>
     </div>
 
-    <div id="sec-billetera" class="section">
-        <h2>Tu Billetera</h2>
-        <div class="score" style="color: white;"><span id="puntos-wallet">0</span> 💎</div>
-        <p>Equivale a: <span id="usd-val">0.00</span> USDT</p>
-        <button class="btn-go" style="width: 100%; padding: 15px; background: #28a745;" onclick="alert('Mínimo de retiro: 5.00 USDT')">RETIRAR FONDOS</button>
+    <div id="billetera" class="section">
+        <h2>Billetera</h2>
+        <div class="score" style="color:white;"><span id="p-wallet">0</span> 💎</div>
+        <p>Equivale a: <span id="val-usdt">0.00</span> USDT</p>
+        <button class="btn-blue" style="width:80%;" onclick="alert('Mínimo de retiro: 5 USDT')">RETIRAR</button>
     </div>
 </div>
 
 <div class="nav-bar">
-    <div class="nav-item selected" id="tab-juego" onclick="showSec('juego')">🎮 Juego</div>
-    <div class="nav-item" id="tab-misiones" onclick="showSec('misiones')">📋 Misiones</div>
-    <div class="nav-item" id="tab-billetera" onclick="showSec('billetera')">💰 Billetera</div>
+    <div class="nav-item selected" id="t-juego" onclick="tab('juego')">🎮 Juego</div>
+    <div class="nav-item" id="t-misiones" onclick="tab('misiones')">📋 Misiones</div>
+    <div class="nav-item" id="t-billetera" onclick="tab('billetera')">💰 Billetera</div>
 </div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    let puntos = parseInt(localStorage.getItem('puntos')) || 0;
-    actualizarPantalla();
+    let p = parseInt(localStorage.getItem('puntos')) || 0;
 
-    if (tg.initDataUnsafe.user) {
-        document.getElementById('username').innerText = "👤 " + tg.initDataUnsafe.user.first_name;
+    function render() {
+        document.getElementById('p-game').innerText = p;
+        document.getElementById('p-wallet').innerText = p;
+        document.getElementById('val-usdt').innerText = (p / 10000).toFixed(2);
+        localStorage.setItem('puntos', p);
     }
 
-    function sumar() {
-        puntos++;
-        actualizarPantalla();
+    if (tg.initDataUnsafe.user) {
+        document.getElementById('user-display').innerText = "👤 " + tg.initDataUnsafe.user.first_name;
+    }
+
+    function tap() {
+        p++;
+        render();
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
     }
 
-    function actualizarPantalla() {
-        document.getElementById('puntos').innerText = puntos;
-        document.getElementById('puntos-wallet').innerText = puntos;
-        // Simulación: 10,000 puntos = 1 USDT
-        document.getElementById('usd-val').innerText = (puntos / 10000).toFixed(2);
-        localStorage.setItem('puntos', puntos);
-    }
-
-    function showSec(name) {
-        // Ocultar todas las secciones
+    function tab(name) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('selected'));
-        
-        // Mostrar la seleccionada
-        document.getElementById('sec-' + name).classList.add('active');
-        document.getElementById('tab-' + name).classList.add('selected');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('selected'));
+        document.getElementById(name).classList.add('active');
+        document.getElementById('t-' + name).classList.add('selected');
     }
 
+    render();
     tg.ready();
 </script>
 
