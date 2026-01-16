@@ -6,19 +6,12 @@
     <title>Kuba Ton Game</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; margin: 0; padding: 0; user-select: none; }
-        .header { padding: 20px; background: #1a1a1a; border-bottom: 2px solid #0088cc; }
+        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; margin: 0; padding: 0; user-select: none; }
+        .header { padding: 15px; background: #1a1a1a; border-bottom: 2px solid #0088cc; font-weight: bold; }
         .content { padding: 20px; padding-bottom: 100px; }
-        .score { font-size: 40px; color: #00ff00; font-weight: bold; margin: 20px 0; }
-        
-        /* Botón Principal */
-        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 180px; height: 180px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; cursor: pointer; box-shadow: 0 0 30px #0088cc; transition: 0.1s; }
-        .btn-main:active { transform: scale(0.9); }
-
-        /* Secciones */
+        .score { font-size: 35px; color: #00ff00; font-weight: bold; margin: 15px 0; }
+        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 160px; height: 160px; border-radius: 50%; color: white; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0088cc; }
+        .btn-main:active { transform: scale(0.95); }
         .section { display: none; }
         .active { display: block; }
-
-        /* Tareas */
-        .task-card { background: #222; padding: 15px; margin: 10px 0; border-radius: 12px; display: flex; justify-content: space-between; align-items:
-            
+        .task-card { background: #222; padding: 12px; margin: 10px 0; border-radius: 10px; display: flex; justify-content: space-
