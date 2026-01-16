@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuba Ton Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { background-color: #000; color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .btn-ton { background: #0088cc; border: none; padding: 20px; border-radius: 50%; width: 150px; height: 150px; font-size: 20px; color: white; font-weight: bold; cursor: pointer; box-shadow: 0 0 20px #0088cc; }
+        .score { font-size: 32px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Kuba Ton Bot 💎</h1>
+    <div class="score">Puntos: <span id="puntos">0</span></div>
+    <br><br>
+    <button class="btn-ton" onclick="sumar()">¡GANAR!</button>
+
+    <script>
+        let puntos = 0;
+        function sumar() {
+            puntos++;
+            document.getElementById('puntos').innerText = puntos;
+            // Aquí luego conectaremos con el bot para guardar los puntos
+        }
+        // Avisar a Telegram que la App está lista
+        window.Telegram.WebApp.ready();
+    </script>
+</body>
+</html>
