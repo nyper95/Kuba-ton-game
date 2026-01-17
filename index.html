@@ -3,116 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuba Ton Game</title>
+    <title>Kuba Ton Bot - Business</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 0; text-align: center; overflow: hidden; }
-        .header { padding: 15px; background: #111; border-bottom: 2px solid #0088cc; font-size: 18px; font-weight: bold; }
+        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; text-align: center; }
+        .header { padding: 15px; background: #111; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; padding: 10px 20px; }
         .content { height: 75vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        
-        /* Secciones */
-        .section { display: none; width: 100%; animation: fadeIn 0.3s; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Estética de Puntos */
-        .score { font-size: 45px; color: #00ff00; font-weight: bold; text-shadow: 0 0 15px #00ff00; margin-bottom: 20px; }
-        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 180px; height: 180px; border-radius: 50%; color: white; font-size: 24px; font-weight: bold; box-shadow: 0 0 30px #0088cc; cursor: pointer; transition: 0.1s; }
+        .score { font-size: 45px; color: #00ff00; font-weight: bold; margin-bottom: 10px; }
+        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 170px; height: 170px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 0 20px #0088cc; cursor: pointer; }
         .btn-main:active { transform: scale(0.9); }
-
-        /* Navegación Inferior */
+        .section { display: none; width: 100%; }
+        .active { display: block; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-        .nav-item { color: #666; font-size: 14px; cursor: pointer; transition: 0.3s; }
-        .nav-item.selected { color: #0088cc; font-weight: bold; transform: scale(1.1); }
-        
-        /* Tarjetas de Misiones */
+        .nav-item { color: #666; font-size: 14px; cursor: pointer; }
+        .nav-item.selected { color: #0088cc; font-weight: bold; }
         .card { background: #1a1a1a; margin: 10px 20px; padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .btn-blue { background: #0088cc; border: none; color: white; padding: 10px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="header" id="user-display">👤 Jugador</div>
+<div class="header">
+    <span id="user-display">👤 Cargando...</span>
+    <span style="color: #0088cc; font-size: 12px;">80% User / 20% Admin</span>
+</div>
 
 <div class="content">
     <div id="juego" class="section active">
         <div class="score"><span id="p-game">0</span> 💎</div>
-        <p style="color: #aaa;">Toca el diamante para minar</p>
         <button class="btn-main" onclick="tap()">¡GANAR!</button>
     </div>
 
-    <div id="misiones" class="section">
-        <h2 style="color: #0088cc;">Misiones Diarias</h2>
-        <div class="card">
-            <div style="text-align: left;">
-                <span style="display: block; font-weight: bold;">Canal Oficial 📢</span>
-                <span style="font-size: 12px; color: #00ff00;">+500 Diamantes</span>
-            </div>
-            <button class="btn-blue" onclick="window.open('https://t.me/kubatoncomunidad')">IR</button>
-        </div>
-        <div class="card">
-            <div style="text-align: left;">
-                <span style="display: block; font-weight: bold;">Invitar Amigos 👥</span>
-                <span style="font-size: 12px; color: #00ff00;">+1500 por amigo</span>
-            </div>
-            <button class="btn-blue">INVITAR</button>
-        </div>
-    </div>
-
     <div id="billetera" class="section">
-        <h2 style="color: #0088cc;">Tu Balance</h2>
+        <h2>Billetera Automática</h2>
         <div class="score" style="color:white;"><span id="p-wallet">0</span> 💎</div>
-        <p style="font-size: 18px;">≈ <span id="val-usdt">0.00</span> USDT</p>
-        <hr style="width: 80%; border: 0.5px solid #333; margin: 20px auto;">
-        <button class="btn-blue" style="width:80%; padding: 15px; font-size: 16px; background: #28a745;" onclick="alert('Mínimo de retiro: 5 USDT. ¡Sigue minando!')">RETIRAR A WALLET</button>
+        <p>Tu ganancia (80%): <span id="user-gain">0.00</span> USDT</p>
+        <p style="font-size: 12px; color: #888;">Mínimo de retiro: 5.00 USDT</p>
+        <button onclick="alert('Procesando retiro automático...')" style="background:#28a745; color:white; border:none; padding:12px; border-radius:8px; width:80%;">RETIRAR AHORA</button>
     </div>
 </div>
 
 <div class="nav-bar">
     <div class="nav-item selected" id="t-juego" onclick="tab('juego')">🎮 Juego</div>
-    <div class="nav-item" id="t-misiones" onclick="tab('misiones')">📋 Misiones</div>
     <div class="nav-item" id="t-billetera" onclick="tab('billetera')">💰 Billetera</div>
 </div>
 
 <script>
+    const SB_URL = "https://wmjjiigpbspfkhznegdr.supabase.co";
+    const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtamppaWdwYnNwZmtoem5lZ2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzAxMzUsImV4cCI6MjA4NDIwNjEzNX0.yqmC4GjzRWrBwfF9xQm74I8EcgnS3yuJOpDJPVbSe7M";
+    const supabase = supabase.createClient(SB_URL, SB_KEY);
+
     let tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Cargar datos
-    let p = parseInt(localStorage.getItem('puntos')) || 0;
+    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "local_user";
+    let puntos = 0;
+
+    async function loadData() {
+        if (tg.initDataUnsafe.user) {
+            document.getElementById('user-display').innerText = "👤 " + tg.initDataUnsafe.user.first_name;
+            
+            let { data, error } = await supabase.from('perfiles').select('*').eq('user_id', userId).single();
+            
+            if (data) {
+                puntos = data.puntos;
+            } else {
+                await supabase.from('perfiles').insert([{ user_id: userId, username: tg.initDataUnsafe.user.username }]);
+            }
+            render();
+        }
+    }
 
     function render() {
-        document.getElementById('p-game').innerText = p.toLocaleString();
-        document.getElementById('p-wallet').innerText = p.toLocaleString();
-        // Conversión: 10,000 puntos = 1 USDT
-        document.getElementById('val-usdt').innerText = (p / 10000).toFixed(2);
-        localStorage.setItem('puntos', p);
+        document.getElementById('p-game').innerText = puntos;
+        document.getElementById('p-wallet').innerText = puntos;
+        
+        // LÓGICA 80/20:
+        // Si 10,000 puntos = 1 USDT total:
+        // El usuario ve su 80% (0.80 USDT)
+        let valorTotal = puntos / 10000;
+        let gananciaUsuario = valorTotal * 0.8; 
+        document.getElementById('user-gain').innerText = gananciaUsuario.toFixed(4);
     }
 
-    // Mostrar nombre de usuario real
-    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-        document.getElementById('user-display').innerText = "👤 " + tg.initDataUnsafe.user.first_name;
-    }
-
-    function tap() {
-        p++;
+    async function tap() {
+        puntos++;
         render();
-        if (tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
+        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        
+        // Guardar en la nube cada 10 clicks para no saturar
+        if (puntos % 10 === 0) {
+            await supabase.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
         }
     }
 
     function tab(name) {
-        // Cambiar secciones
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('selected'));
-        
         document.getElementById(name).classList.add('active');
         document.getElementById('t-' + name).classList.add('selected');
     }
 
-    // Inicializar app
-    render();
+    loadData();
     tg.ready();
 </script>
 
