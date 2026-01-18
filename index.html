@@ -3,83 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuba Ton Bot</title>
+    <title>Kuba Ton Bot - Ganancias</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; text-align: center; user-select: none; }
-        .header { padding: 10px; background: #111; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; font-size: 14px; }
-        .score { font-size: 50px; color: #00ff00; font-weight: bold; margin: 20px 0; }
-        .btn-main { background: radial-gradient(circle, #0088cc, #004466); border: none; width: 200px; height: 200px; border-radius: 50%; color: white; font-size: 24px; font-weight: bold; box-shadow: 0 0 20px #0088cc; cursor: pointer; }
-        .btn-main:active { transform: scale(0.95); }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #111; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; }
-    </style>
-</head>
-<body>
-
-<div class="header">
-    <span id="user-display">👤 Conectando...</span>
-    <span style="color: #0088cc;">80% User / 20% Admin</span>
-</div>
-
-<div id="pantalla-juego">
-    <div class="score"><span id="puntos-display">0</span> 💎</div>
-    <button class="btn-main" onclick="tocar()">¡GANAR!</button>
-    <p id="status" style="font-size: 12px; color: #555; margin-top: 15px;">Sincronizando con la nube...</p>
-</div>
-
-<div class="nav-bar">
-    <span>🎮 Juego</span>
-    <span style="color: #666;">💰 Billetera (Próximamente)</span>
-</div>
-
-<script>
-    const SB_URL = "https://wmjjiigpbspfkhznegdr.supabase.co";
-    const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtamppaWdwYnNwZmtoem5lZ2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzAxMzUsImV4cCI6MjA4NDIwNjEzNX0.yqmC4GjzRWrBwfF9xQm74I8EcgnS3yuJOpDJPVbSe7M";
-    const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-
-    // ID real de Telegram o uno de prueba si estás en navegador
-    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "test_user";
-    let puntos = 0;
-
-    async function iniciar() {
-        document.getElementById('user-display').innerText = "👤 " + (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Usuario");
-        
-        // Intentar leer puntos de Supabase
-        let { data, error } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).single();
-        
-        if (error && error.code === 'PGRST116') {
-            // Si el usuario no existe, lo creamos
-            await supabaseClient.from('perfiles').insert([{ user_id: userId, username: tg.initDataUnsafe.user?.username || "anon" }]);
-            console.log("Usuario nuevo creado");
-        } else if (data) {
-            puntos = data.puntos;
-        }
-        
-        actualizarVista();
-    }
-
-    function actualizarVista() {
-        document.getElementById('puntos-display').innerText = puntos;
-    }
-
-    async function tocar() {
-        puntos++;
-        actualizarVista();
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-
-        // Guardar cada 5 clics para asegurar el 80/20
-        if (puntos % 5 === 0) {
-            document.getElementById('status').innerText = "Guardando...";
-            const { error } = await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-            if (!error) document.getElementById('status').innerText = "Nube actualizada ✅";
-        }
-    }
-
-    iniciar();
-</script>
-</body>
-</html>
+        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        .header { padding: 15px; background: #15191d; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between
+                 
