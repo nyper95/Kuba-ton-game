@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuba Ton Bot - Oficial</title>
+    <title>Kuba Ton Bot - v2.0</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0b0e11; color: white; font-family: sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; text-align: center; }
-        .header { padding: 15px; background: #15191d; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
+        body { background-color: #0b0e11; color: white; font-family: sans-serif; margin: 0; padding-bottom: 80px; text-align: center; }
+        .header { padding: 15px; background: #15191d; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; align-items: center; }
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
-        .score-container { background: #1e2329; border-radius: 20px; padding: 20px; margin: 20px auto; border: 1px solid #333; width: 80%; }
+        .score-container { background: #1e2329; border-radius: 20px; padding: 20px; margin: 20px auto; border: 1px solid #333; width: 85%; }
         .score { font-size: 48px; color: #00ff00; font-weight: bold; }
-        .btn-main { background: radial-gradient(circle, #0088cc, #005580); border: none; width: 200px; height: 200px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 0 20px rgba(0,136,204,0.5); cursor: pointer; border: 5px solid #002d44; margin-top: 10px; }
+        .btn-main { background: radial-gradient(circle, #0088cc, #005580); border: none; width: 200px; height: 200px; border-radius: 50%; color: white; font-size: 24px; font-weight: bold; box-shadow: 0 0 20px rgba(0,136,204,0.5); border: 5px solid #002d44; margin-top: 15px; cursor: pointer; }
         .btn-main:active { transform: scale(0.95); }
-        .mission-card { background: #1e2329; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0088cc; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .mission-card { background: #1e2329; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 5px solid #0088cc; display: flex; justify-content: space-between; align-items: center; text-align: left; }
         .btn-mission { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
         .wallet-card { background: #15191d; padding: 25px; border-radius: 20px; border: 1px solid #0088cc; margin-top: 20px; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: #15191d; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .nav-item { color: #5d6670; cursor: pointer; font-size: 12px; flex: 1; }
+        .nav-item { color: #5d6670; font-size: 12px; flex: 1; }
         .nav-item.active { color: #0088cc; font-weight: bold; }
     </style>
 </head>
@@ -27,13 +27,13 @@
 
 <div class="header">
     <span id="user-display">👤 Conectando...</span>
-    <div style="text-align: right;"><small style="color: #848e9c;">Ganancia</small><br><b style="color: #0088cc;">80%</b></div>
+    <div style="text-align: right;"><small style="color: #848e9c;">Tu Parte</small><br><b style="color: #0088cc;">80%</b></div>
 </div>
 
 <div id="tab-juego" class="tab-content active">
     <div class="score-container">
         <div class="score"><span id="puntos-display">0</span> 💎</div>
-        <p id="status" style="font-size: 12px; color: #00ff00; margin: 5px 0 0 0;">Cargando...</p>
+        <p id="status" style="font-size: 12px; color: #848e9c; margin: 5px 0 0 0;">Cargando base de datos...</p>
     </div>
     <button class="btn-main" onclick="tocar()">¡MINAR!</button>
 </div>
@@ -53,9 +53,10 @@
 <div id="tab-billetera" class="tab-content">
     <h2 style="text-align: left;">Billetera</h2>
     <div class="wallet-card">
-        <p style="color: #848e9c;">Saldo disponible (80%)</p>
-        <h1 id="wallet-balance" style="color: #00ff00;">0.0000 USDT</h1>
-        <button onclick="alert('Mínimo de retiro: 5 USDT')" style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #2b3139; color: white;">Retirar</button>
+        <p style="color: #848e9c;">Balance Acumulado (USDT)</p>
+        <h1 id="wallet-balance" style="color: #00ff00;">0.0000</h1>
+        <small>Mínimo de retiro: 5.00 USDT</small>
+        <button onclick="alert('Balance insuficiente')" style="width: 100%; margin-top: 15px; padding: 12px; border-radius: 10px; border: none; background: #2b3139; color: white;">Retirar</button>
     </div>
 </div>
 
@@ -73,53 +74,60 @@
 
     let tg = window.Telegram.WebApp;
     tg.expand();
-    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "test_user";
+    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "usuario_prueba";
     let puntos = 0;
+    let cargado = false;
 
     async function iniciar() {
         document.getElementById('user-display').innerText = "👤 " + (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Usuario");
         
-        let { data, error } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).single();
-        
-        if (data) {
-            puntos = data.puntos;
-        } else {
-            await supabaseClient.from('perfiles').upsert({ user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" });
+        try {
+            let { data, error } = await supabaseClient
+                .from('perfiles')
+                .select('puntos')
+                .eq('user_id', userId)
+                .maybeSingle();
+
+            if (data) {
+                puntos = data.puntos;
+                document.getElementById('status').innerText = "Datos recuperados ✅";
+            } else {
+                document.getElementById('status').innerText = "Nuevo usuario 🆕";
+                // Solo creamos el registro si no existe
+                await supabaseClient.from('perfiles').upsert({ user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" });
+            }
+            cargado = true;
+            actualizarVista();
+        } catch (e) {
+            document.getElementById('status').innerText = "Error de red ⚠️";
         }
-        actualizarVista();
-        document.getElementById('status').innerText = "Sincronizado ✅";
     }
 
     function actualizarVista() {
         document.getElementById('puntos-display').innerText = puntos;
-        let valorUsuario = puntos * 0.0005; 
-        document.getElementById('wallet-balance').innerText = valorUsuario.toFixed(4) + " USDT";
+        let valorUSDT = puntos * 0.0005; 
+        document.getElementById('wallet-balance').innerText = valorUSDT.toFixed(4);
     }
 
     async function tocar() {
+        if (!cargado) return;
         puntos++;
         actualizarVista();
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         
-        // Guardado forzado
-        await supabaseClient.from('perfiles').upsert({ 
-            user_id: userId, 
-            puntos: puntos, 
-            username: tg.initDataUnsafe.user?.username || "anon" 
-        }, { onConflict: 'user_id' });
+        // Guardado automático cada vez que toca
+        await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
     }
 
     async function irAMision() {
+        if (!cargado) return;
         window.open(MISION_URL, '_blank');
         setTimeout(async () => {
             puntos += 500;
             actualizarVista();
-            await supabaseClient.from('perfiles').upsert({ 
-                user_id: userId, 
-                puntos: puntos 
-            }, { onConflict: 'user_id' });
-            alert("¡Puntos de misión guardados!");
-        }, 3000);
+            await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
+            alert("¡500 puntos guardados!");
+        }, 4000);
     }
 
     function showTab(tabId) {
