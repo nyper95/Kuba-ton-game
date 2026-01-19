@@ -3,64 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuba Ton Bot - Ganancias</title>
+    <title>Kuba Ton Bot - Oficial</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { background-color: #0b0e11; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        body { background-color: #0b0e11; color: white; font-family: sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; text-align: center; }
         .header { padding: 15px; background: #15191d; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 10; }
-        .tab-content { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .score-container { background: linear-gradient(145deg, #1e2329, #15191d); border-radius: 20px; padding: 20px; margin: 20px 0; border: 1px solid #333; }
-        .score { font-size: 48px; color: #00ff00; font-weight: bold; text-shadow: 0 0 10px rgba(0,255,0,0.3); }
-        .btn-main { background: radial-gradient(circle, #0088cc, #005580); border: none; width: 190px; height: 190px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 0 30px rgba(0,136,204,0.5); cursor: pointer; transition: 0.1s; border: 5px solid #002d44; }
-        .btn-main:active { transform: scale(0.92); box-shadow: 0 0 10px #0088cc; }
-        .mission-card { background: #1e2329; padding: 18px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0088cc; display: flex; justify-content: space-between; align-items: center; }
-        .btn-mission { background: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; }
-        .wallet-card { background: linear-gradient(145deg, #111, #222); padding: 25px; border-radius: 20px; border: 1px solid #0088cc; margin-top: 20px; }
+        .score-container { background: #1e2329; border-radius: 20px; padding: 20px; margin: 20px auto; border: 1px solid #333; width: 80%; }
+        .score { font-size: 48px; color: #00ff00; font-weight: bold; }
+        .btn-main { background: radial-gradient(circle, #0088cc, #005580); border: none; width: 200px; height: 200px; border-radius: 50%; color: white; font-size: 22px; font-weight: bold; box-shadow: 0 0 20px rgba(0,136,204,0.5); cursor: pointer; border: 5px solid #002d44; margin-top: 10px; }
+        .btn-main:active { transform: scale(0.95); }
+        .mission-card { background: #1e2329; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-left: 5px solid #0088cc; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .btn-mission { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
+        .wallet-card { background: #15191d; padding: 25px; border-radius: 20px; border: 1px solid #0088cc; margin-top: 20px; }
         .nav-bar { position: fixed; bottom: 0; width: 100%; background: #15191d; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .nav-item { color: #5d6670; cursor: pointer; font-size: 12px; text-align: center; flex: 1; }
-        .nav-item.active { color: #0088cc; }
-        .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
+        .nav-item { color: #5d6670; cursor: pointer; font-size: 12px; flex: 1; }
+        .nav-item.active { color: #0088cc; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <span id="user-display">👤 Conectando...</span>
-    <div style="text-align: right;"><small style="color: #848e9c; display: block;">Tu Ganancia</small><b style="color: #0088cc;">80%</b></div>
+    <div style="text-align: right;"><small style="color: #848e9c;">Ganancia</small><br><b style="color: #0088cc;">80%</b></div>
 </div>
 
 <div id="tab-juego" class="tab-content active">
     <div class="score-container">
-        <div class="score"><span id="puntos-display">0</span> <small style="font-size: 18px;">💎</small></div>
-        <p style="color: #848e9c; margin: 5px 0 0 0;">Toca para minar puntos</p>
+        <div class="score"><span id="puntos-display">0</span> 💎</div>
+        <p id="status" style="font-size: 12px; color: #00ff00; margin: 5px 0 0 0;">Cargando...</p>
     </div>
     <button class="btn-main" onclick="tocar()">¡MINAR!</button>
-    <p id="status" style="font-size: 12px; color: #3b424a; margin-top: 30px;">Sincronizado con Supabase</p>
 </div>
 
 <div id="tab-misiones" class="tab-content">
-    <h2 style="text-align: left;">Misiones Extra</h2>
+    <h2 style="text-align: left;">Misiones</h2>
     <div class="mission-card">
         <div>
-            <strong style="font-size: 16px;">🚀 Enlace Premium</strong><br>
+            <strong>🚀 Enlace Premium</strong><br>
             <small style="color: #848e9c;">Mira el anuncio completo</small><br>
-            <span style="color: #00ff00; font-weight: bold;">+500 💎</span>
+            <span style="color: #00ff00;">+500 💎</span>
         </div>
         <button class="btn-mission" onclick="irAMision()">IR</button>
     </div>
-    <p style="font-size: 11px; color: #555;">* Las misiones se verifican manualmente por el admin para el pago final.</p>
 </div>
 
 <div id="tab-billetera" class="tab-content">
     <h2 style="text-align: left;">Billetera</h2>
     <div class="wallet-card">
-        <p style="color: #848e9c; margin-bottom: 5px;">Saldo disponible (80%)</p>
-        <h1 id="wallet-balance" style="margin: 0; color: #00ff00;">0.0000 USDT</h1>
-        <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-        <button onclick="alert('Mínimo de retiro: 5 USDT')" style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #2b3139; color: white; font-weight: bold;">Retirar a Tonkeeper</button>
+        <p style="color: #848e9c;">Saldo disponible (80%)</p>
+        <h1 id="wallet-balance" style="color: #00ff00;">0.0000 USDT</h1>
+        <button onclick="alert('Mínimo de retiro: 5 USDT')" style="width: 100%; padding: 12px; border-radius: 10px; border: none; background: #2b3139; color: white;">Retirar</button>
     </div>
 </div>
 
@@ -83,37 +78,48 @@
 
     async function iniciar() {
         document.getElementById('user-display').innerText = "👤 " + (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Usuario");
-        let { data } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).single();
-        if (data) puntos = data.puntos;
-        else await supabaseClient.from('perfiles').insert([{ user_id: userId, username: tg.initDataUnsafe.user?.username || "anon" }]);
+        
+        let { data, error } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).single();
+        
+        if (data) {
+            puntos = data.puntos;
+        } else {
+            await supabaseClient.from('perfiles').upsert({ user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" });
+        }
         actualizarVista();
+        document.getElementById('status').innerText = "Sincronizado ✅";
     }
 
     function actualizarVista() {
         document.getElementById('puntos-display').innerText = puntos;
-        // 1000 puntos = 0.50 USDT aprox. Calculamos el 80% para el usuario
-        let valorTotal = puntos * 0.0005; 
-        document.getElementById('wallet-balance').innerText = valorTotal.toFixed(4) + " USDT";
-    }
-
-    function irAMision() {
-        window.open(MISION_URL, '_blank');
-        // Al regresar, le damos los puntos (simulando que completó)
-        setTimeout(async () => {
-            puntos += 500;
-            actualizarVista();
-            await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-            alert("¡Puntos de misión solicitados! Se sumarán tras verificar el clic.");
-        }, 2000);
+        let valorUsuario = puntos * 0.0005; 
+        document.getElementById('wallet-balance').innerText = valorUsuario.toFixed(4) + " USDT";
     }
 
     async function tocar() {
         puntos++;
         actualizarVista();
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        if (puntos % 10 === 0) {
-            await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-        }
+        
+        // Guardado forzado
+        await supabaseClient.from('perfiles').upsert({ 
+            user_id: userId, 
+            puntos: puntos, 
+            username: tg.initDataUnsafe.user?.username || "anon" 
+        }, { onConflict: 'user_id' });
+    }
+
+    async function irAMision() {
+        window.open(MISION_URL, '_blank');
+        setTimeout(async () => {
+            puntos += 500;
+            actualizarVista();
+            await supabaseClient.from('perfiles').upsert({ 
+                user_id: userId, 
+                puntos: puntos 
+            }, { onConflict: 'user_id' });
+            alert("¡Puntos de misión guardados!");
+        }, 3000);
     }
 
     function showTab(tabId) {
