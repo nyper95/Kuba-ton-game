@@ -30,28 +30,21 @@
 <div id="tab-juego" class="tab-content active">
     <div class="score-container">
         <div class="score"><span id="puntos-display">0</span> 💎</div>
-        <p id="status" style="font-size: 12px; color: #f39c12;">Verificando conexión...</p>
+        <p id="status" style="font-size: 12px; color: #f39c12;">Estado: Iniciando...</p>
     </div>
     <button class="btn-main" onclick="tocar()">¡MINAR!</button>
 </div>
 
 <div id="tab-misiones" class="tab-content">
-    <h2 style="text-align: left;">Misiones</h2>
-    <div style="background: #1e2329; padding: 15px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
-        <div style="text-align: left;">
-            <strong>🚀 Enlace Premium</strong><br>
-            <span style="color: #00ff00;">+500 💎</span>
-        </div>
-        <button onclick="irAMision()" style="background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold;">IR</button>
-    </div>
+    <h2>Misiones</h2>
+    <p>Próximamente más misiones.</p>
 </div>
 
 <div id="tab-billetera" class="tab-content">
-    <h2 style="text-align: left;">Billetera</h2>
+    <h2>Billetera</h2>
     <div style="background: #15191d; padding: 25px; border-radius: 20px; border: 1px solid #0088cc;">
-        <p style="color: #848e9c;">Saldo (USDT)</p>
-        <h1 id="wallet-balance" style="color: #00ff00;">0.0000</h1>
-        <button onclick="alert('Mínimo 5 USDT')" style="width: 100%; padding: 12px; background: #2b3139; color: white; border-radius: 10px; border: none;">Retirar</button>
+        <p>Saldo Disponible</p>
+        <h1 id="wallet-balance" style="color: #00ff00;">0.0000 USDT</h1>
     </div>
 </div>
 
@@ -68,66 +61,48 @@
 
     let tg = window.Telegram.WebApp;
     tg.expand();
-    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "usuario_local";
+    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "usuario_prueba";
     let puntos = 0;
-    let listo = false;
+    let cargado = false;
 
     async function iniciar() {
         document.getElementById('user-display').innerText = "👤 " + (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Usuario");
         
-        // Buscamos usando los nombres de tus capturas
-        const { data, error } = await supabaseClient
-            .from('perfiles')
-            .select('puntos')
-            .eq('user_id', userId)
-            .maybeSingle();
+        // 1. Intentar leer puntos de la columna 'puntos'
+        const { data, error } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).maybeSingle();
 
         if (data) {
             puntos = data.puntos;
             document.getElementById('status').innerText = "Sincronizado ✅";
         } else {
-            // Si no existe, lo creamos
-            await supabaseClient.from('perfiles').insert([
-                { user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" }
-            ]);
-            document.getElementById('status').innerText = "Cuenta creada 🆕";
+            // 2. Si no existe, crear la fila inicial
+            await supabaseClient.from('perfiles').insert([{ user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" }]);
+            document.getElementById('status').innerText = "Cuenta nueva creada 🆕";
         }
-        listo = true;
+        cargado = true;
         actualizarVista();
     }
 
     function actualizarVista() {
         document.getElementById('puntos-display').innerText = puntos;
-        document.getElementById('wallet-balance').innerText = (puntos * 0.0005).toFixed(4);
+        document.getElementById('wallet-balance').innerText = (puntos * 0.0005).toFixed(4) + " USDT";
     }
 
     async function tocar() {
-        if (!listo) return;
+        if (!cargado) return;
         puntos++;
         actualizarVista();
         if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
         
-        // Guardar cada 5 clics para no trabar el móvil
+        // Guardar cada 5 toques para no saturar la base de datos
         if (puntos % 5 === 0) {
             await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
         }
     }
 
-    async function irAMision() {
-        window.open("https://shrinkme.click/l8ZTzVpm", '_blank');
-        setTimeout(async () => {
-            puntos += 500;
-            actualizarVista();
-            await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-            alert("¡Puntos guardados!");
-        }, 5000);
-    }
-
     function showTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
     }
 
     iniciar();
