@@ -3,142 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kuba Ton Bot Pro</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>SlingShot Diamonds</title>
     <style>
-        body { background-color: #0b0e11; color: white; font-family: sans-serif; margin: 0; padding-bottom: 80px; text-align: center; }
-        .header { padding: 15px; background: #15191d; border-bottom: 2px solid #0088cc; display: flex; justify-content: space-between; align-items: center; }
-        .tab-content { display: none; padding: 20px; animation: fadeIn 0.3s; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .score-container { background: #1e2329; border-radius: 20px; padding: 20px; margin: 20px auto; border: 1px solid #333; width: 85%; }
-        .score { font-size: 48px; color: #00ff00; font-weight: bold; }
-        .btn-main { background: radial-gradient(circle, #0088cc, #005580); border: none; width: 200px; height: 200px; border-radius: 50%; color: white; font-size: 24px; font-weight: bold; box-shadow: 0 0 20px rgba(0,136,204,0.5); border: 5px solid #002d44; margin-top: 15px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-        .btn-main:active { transform: scale(0.95); }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #15191d; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #333; }
-        .nav-item { color: #5d6670; font-size: 12px; flex: 1; cursor: pointer; }
-        .nav-item.active { color: #0088cc; font-weight: bold; }
-        .mission-card { background: #1e2329; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 5px solid #0088cc; display: flex; justify-content: space-between; align-items: center; text-align: left; }
-        .btn-mission { background: #0088cc; color: white; border: none; padding: 10px 15px; border-radius: 8px; font-weight: bold; }
-        .wallet-card { background: #15191d; padding: 25px; border-radius: 20px; border: 1px solid #0088cc; margin-top: 20px; }
+        body { margin: 0; overflow: hidden; background: #87CEEB; font-family: Arial, sans-serif; }
+        canvas { display: block; }
+        #ui {
+            position: absolute; top: 10px; left: 10px;
+            font-size: 20px; font-weight: bold; color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
+    <div id="ui">Diamantes: <span id="score">0</span></div>
+    <canvas id="gameCanvas"></canvas>
 
-<div class="header">
-    <span id="user-display">👤 Cargando...</span>
-    <div style="text-align: right;"><small style="color: #848e9c;">Ganancia</small><br><b style="color: #0088cc;">80%</b></div>
-</div>
-
-<div id="tab-juego" class="tab-content active">
-    <div class="score-container">
-        <div class="score"><span id="puntos-display">0</span> 💎</div>
-        <p id="status" style="font-size: 11px; color: #f39c12;">Conectando...</p>
-    </div>
-    <button class="btn-main" onclick="tocar()">¡MINAR!</button>
-</div>
-
-<div id="tab-misiones" class="tab-content">
-    <h2 style="text-align: left;">Misiones Disponibles</h2>
-    <div class="mission-card">
-        <div>
-            <strong>🚀 Enlace Premium</strong><br>
-            <small style="color: #848e9c;">Mira el anuncio completo</small><br>
-            <span style="color: #00ff00;">+500 💎</span>
-        </div>
-        <button class="btn-mission" onclick="irAMision()">IR</button>
-    </div>
-</div>
-
-<div id="tab-billetera" class="tab-content">
-    <h2 style="text-align: left;">Billetera</h2>
-    <div class="wallet-card">
-        <p style="color: #848e9c;">Balance (USDT)</p>
-        <h1 id="wallet-balance" style="color: #00ff00;">0.0000</h1>
-        <small style="color: #555;">Mínimo de retiro: 5.00 USDT</small>
-        <button onclick="alert('Saldo insuficiente')" style="width: 100%; margin-top: 15px; padding: 12px; border-radius: 10px; border: none; background: #2b3139; color: white;">Retirar</button>
-    </div>
-</div>
-
-<div class="nav-bar">
-    <div class="nav-item active" onclick="showTab('juego')">🎮<br>Juego</div>
-    <div class="nav-item" onclick="showTab('misiones')">🚀<br>Misiones</div>
-    <div class="nav-item" onclick="showTab('billetera')">💰<br>Billetera</div>
-</div>
-
-<script>
-    const SB_URL = "https://wmjjiigpbspfkhznegdr.supabase.co";
-    const SB_KEY = "EyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndtamppaWdwYnNwZmtoem5lZ2RyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MzAxMzUsImV4cCI6MjA4NDIwNjEzNX0.yqmC4GjzRWrBwfF9xQm74I8EcgnS3yuJOpDJPVbSe7M";
-    const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
-    const MISION_URL = "https://shrinkme.click/l8ZTzVpm";
-
-    let tg = window.Telegram.WebApp;
-    tg.expand();
-    let userId = tg.initDataUnsafe.user ? tg.initDataUnsafe.user.id.toString() : "test_user_cuba";
-    let puntos = 0;
-    let inicializado = false;
-
-    async function iniciar() {
-        document.getElementById('user-display').innerText = "👤 " + (tg.initDataUnsafe.user ? tg.initDataUnsafe.user.first_name : "Usuario");
-        
-        try {
-            // Intentamos cargar
-            let { data, error } = await supabaseClient.from('perfiles').select('puntos').eq('user_id', userId).maybeSingle();
-
-            if (data) {
-                puntos = data.puntos;
-                document.getElementById('status').innerText = "Sincronizado ✅";
-            } else {
-                // Si no existe, lo creamos forzosamente
-                await supabaseClient.from('perfiles').insert([{ user_id: userId, puntos: 0, username: tg.initDataUnsafe.user?.username || "anon" }]);
-                document.getElementById('status').innerText = "Cuenta Nueva 🆕";
-            }
-            inicializado = true;
-            actualizarVista();
-        } catch (e) {
-            document.getElementById('status').innerText = "Error de conexión ❌";
-        }
-    }
-
-    function actualizarVista() {
-        document.getElementById('puntos-display').innerText = puntos;
-        let valorUSDT = puntos * 0.0005; 
-        document.getElementById('wallet-balance').innerText = valorUSDT.toFixed(4);
-    }
-
-    async function tocar() {
-        if (!inicializado) return;
-        puntos++;
-        actualizarVista();
-        if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-        
-        // Guardado cada 5 clics
-        if (puntos % 5 === 0) {
-            const { error } = await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-            if (!error) document.getElementById('status').innerText = "Sincronizado ✅";
-        }
-    }
-
-    async function irAMision() {
-        if (!inicializado) return;
-        window.open(MISION_URL, '_blank');
-        setTimeout(async () => {
-            puntos += 500;
-            actualizarVista();
-            await supabaseClient.from('perfiles').update({ puntos: puntos }).eq('user_id', userId);
-            alert("¡Puntos de misión recibidos!");
-        }, 5000);
-    }
-
-    function showTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-        document.getElementById('tab-' + tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    iniciar();
-</script>
+    <script src="game.js"></script>
 </body>
 </html>
